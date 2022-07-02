@@ -11,7 +11,7 @@ from gpiozero import OutputDevice
 MIN_FAN_ON_TEMP = 48.0
 MAX_FAN_OFF_TEMP = 56.0
 SLEEP_INTERVAL = 5.0
-GPIO_PIN = 17
+GPIO_PIN = 12
 MAX_LOG_SIZE_IN_BYTES = 1_000_000
 
 
@@ -21,7 +21,7 @@ def cpu_temp():
 
 
 def rotate_logs():
-    pi_pathname = '/home/pi/pi_temp_control'
+    pi_pathname = '/home/pi/.local/share/fancontrol'
     log_pathname = pi_pathname + '/logs'
     log_filename = log_pathname + '/log.txt'
 
@@ -45,7 +45,7 @@ def rotate_logs():
 
 
 def log_temperature(temperature, message):
-    log_filename = '/home/pi/pi_temp_control/logs/log.txt'
+    log_filename = '/home/pi/.local/share/fancontrol/logs/log.txt'
     with open(log_filename, 'a') as f:
         logtext = '{} {} {}\n'.format(time.ctime(), temperature, message)
         f.write(logtext)
@@ -61,13 +61,13 @@ def main():
         temperature = cpu_temp()
 
         if temperature > MAX_FAN_OFF_TEMP and not fan.value:
-            log_temperature(time.ctime(), temperature, 'fan on')
+            log_temperature(temperature, 'fan on')
             fan.on()
         elif fan.value and temperature < MIN_FAN_ON_TEMP:
-            log_temperature(time.ctime(), temperature, 'fan off')
+            log_temperature(temperature, 'fan off')
             fan.off()
         else:
-            log_temperature(temperature, 'ok')
+            log_temperature(temperature, 'status: ' + fan.value)
 
         time.sleep(SLEEP_INTERVAL)
 
