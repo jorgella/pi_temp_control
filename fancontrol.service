@@ -1,0 +1,11 @@
+[Unit]
+Description=Fan Control
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/systemd/scripts/fancontrol.sh start
+ExecStop=/usr/lib/systemd/scripts/fancontrol.sh stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
