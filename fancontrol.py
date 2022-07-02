@@ -67,7 +67,7 @@ def main():
             log_temperature(temperature, 'fan off')
             fan.off()
         else:
-            log_temperature(temperature, 'status: ' + fan.value)
+            log_temperature(temperature, 'status: {}'.format(fan.value))
 
         time.sleep(SLEEP_INTERVAL)
 
