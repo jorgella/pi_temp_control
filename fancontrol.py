@@ -21,7 +21,7 @@ def cpu_temp():
 
 
 def rotate_logs():
-    pi_pathname = '/home/pi/pi_thermal_control'
+    pi_pathname = '/home/pi/pi_temp_control'
     log_pathname = pi_pathname + '/logs'
     log_filename = log_pathname + '/log.txt'
 
@@ -45,7 +45,7 @@ def rotate_logs():
 
 
 def log_temperature(temperature, message):
-    log_filename = '/home/pi/pi_thermal_control/logs/log.txt'
+    log_filename = '/home/pi/pi_temp_control/logs/log.txt'
     with open(log_filename, 'a') as f:
         logtext = '{} {} {}'.format(time.ctime(), temperature, message)
         f.write(logtext)
