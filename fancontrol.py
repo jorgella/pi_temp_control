@@ -47,7 +47,7 @@ def rotate_logs():
 def log_temperature(temperature, message):
     log_filename = '/home/pi/pi_temp_control/logs/log.txt'
     with open(log_filename, 'a') as f:
-        logtext = '{} {} {}'.format(time.ctime(), temperature, message)
+        logtext = '{} {} {}\n'.format(time.ctime(), temperature, message)
         f.write(logtext)
 
 
