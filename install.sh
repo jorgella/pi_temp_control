@@ -6,8 +6,6 @@ touch /home/pi/.local/share/fancontrol/logs/log.txt
 
 sudo cp fancontrol.py /home/pi/.local/bin/fancontrol
 
-sudo cp fancontrol.py /home/pi/.local/bin/fancontrol_stop
-
 sudo cp fancontrol.service /usr/lib/systemd/system/
 
 sudo cp fancontrol.sh /usr/lib/systemd/scripts/

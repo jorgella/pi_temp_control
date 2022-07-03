@@ -8,7 +8,6 @@ case "$1" in
     stop)
         echo "Stopping Fan"
         kill $(ps aux | grep -m 1 'python3 /home/pi/.local/bin/fancontrol' | awk '{ print $2 }')
-        python3 /home/pi/.local/bin/fancontrol_stop
         ;;
     *)
         echo "Usage: service fan start|stop"

@@ -3,6 +3,8 @@
 import os
 import time
 from os.path import exists
+from signal import SIGINT, signal
+from sys import exit
 
 import RPi.GPIO as GPIO
 
@@ -98,5 +100,14 @@ def main():
         time.sleep(SLEEP_INTERVAL)
 
 
+def handler(signal_received, frame):
+    pwm.stop()
+    GPIO.cleanup()
+
+    print('SIGINT or CTRL-C')
+    exit(0)
+
+
 if __name__ == '__main__':
+    signal(SIGINT, handler)
     main()
