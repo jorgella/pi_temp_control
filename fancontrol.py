@@ -4,15 +4,29 @@ import os
 import time
 from os.path import exists
 
-from gpiozero import OutputDevice
+import RPi.GPIO as GPIO
 
 # doc: https://gpiozero.readthedocs.io/
 
-MIN_FAN_ON_TEMP = 48.0
-MAX_FAN_OFF_TEMP = 56.0
-SLEEP_INTERVAL = 5.0
+FAN_OFF_TEMP = 46.0
+FAN_ON_TEMP = 52.0
+FAN_MAX_TEMP = 58.0
+
+SLEEP_INTERVAL = 10.0
 GPIO_PIN = 12
 MAX_LOG_SIZE_IN_BYTES = 1_000_000
+
+PWM_FREQUENCY = 200
+PWM_MAX_VALUE = 100
+PWM_NORMAL_VALUE = 60
+PWM_OFF_VALUE = 0
+
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+
+pwm = GPIO.PWM(GPIO_PIN, PWM_FREQUENCY)
+pwm.start(PWM_OFF_VALUE)
 
 
 def cpu_temp():
@@ -52,22 +66,34 @@ def log_temperature(temperature, message):
 
 
 def main():
-    fan = OutputDevice(GPIO_PIN)
-    fan.off()
+    duty_cycle = PWM_MAX_VALUE
+    fan_is_on = False
 
     while True:
         rotate_logs()
 
         temperature = cpu_temp()
 
-        if temperature > MAX_FAN_OFF_TEMP and not fan.value:
+        if temperature > FAN_ON_TEMP and not fan_is_on:
+            duty_cycle = PWM_NORMAL_VALUE
+            pwm.ChangeDutyCycle(duty_cycle)
+            fan_is_on = True
             log_temperature(temperature, 'fan on')
-            fan.on()
-        elif fan.value and temperature < MIN_FAN_ON_TEMP:
+
+        elif temperature > FAN_MAX_TEMP:
+            duty_cycle = PWM_MAX_VALUE
+            pwm.ChangeDutyCycle(duty_cycle)
+            fan_is_on = True
+            log_temperature(temperature, 'thermal throttling is comming')
+
+        elif fan_is_on and temperature < FAN_OFF_TEMP:
+            duty_cycle = PWM_OFF_VALUE
+            pwm.ChangeDutyCycle(duty_cycle)
+            fan_is_on = False
             log_temperature(temperature, 'fan off')
-            fan.off()
+
         else:
-            log_temperature(temperature, 'status: {}'.format(fan.value))
+            log_temperature(temperature, 'pwm status: {}'.format(duty_cycle))
 
         time.sleep(SLEEP_INTERVAL)
 
