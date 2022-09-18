@@ -1,10 +1,6 @@
 #!/bin/bash
 
-mkdir -p /home/pi/.local/bin
-mkdir -p /home/pi/.local/share/fancontrol/logs
-touch /home/pi/.local/share/fancontrol/logs/log.txt
-
-sudo cp fanonoff.py /home/pi/.local/bin/fancontrol
+sudo ln -s $HOME/fancontrol $PWD
 
 sudo cp fancontrol.service /usr/lib/systemd/system/
 
