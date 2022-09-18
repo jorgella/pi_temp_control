@@ -84,7 +84,7 @@ def main():
         elif temperature < FAN_OFF_TEMP:
             control.poweroff_fan()
 
-        log_temperature(temperature, control.get_state)
+        log_temperature(temperature, control.get_state())
 
         time.sleep(10.0)
 
