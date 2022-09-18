@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo ln -s $PWD /opt/fancontrol
+sudo ln -s /opt/fancontrol $PWD
 
 sudo cp fancontrol.service /usr/lib/systemd/system/
 
