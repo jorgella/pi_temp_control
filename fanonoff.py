@@ -5,7 +5,6 @@ from gpiozero import LED
 
 import os
 from os.path import exists
-from time import time
 
 
 MAX_LOG_SIZE_IN_BYTES = 1_000_000
