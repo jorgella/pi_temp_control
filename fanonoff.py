@@ -1,6 +1,9 @@
 #!/usr/bin/python
+import re
 from signal import SIGINT, signal
 import time
+
+from sqlalchemy import false
 from gpiozero import LED
 
 import os
@@ -8,14 +11,14 @@ from os.path import exists
 
 
 MAX_LOG_SIZE_IN_BYTES = 1_000_000
-FAN_OFF_TEMP = 46.0
-FAN_ON_TEMP = 52.0
+FAN_OFF_TEMP = 45.0
+FAN_ON_TEMP = 50.0
 
-fan = LED(21)
+fan = LED(18)
 
 
 def rotate_logs():
-    pi_pathname = os.path.curdir
+    pi_pathname = '/opt/fancontrol'
     log_pathname = pi_pathname + '/logs'
     log_filename = log_pathname + '/log.txt'
 
@@ -39,7 +42,7 @@ def rotate_logs():
 
 
 def log_temperature(temperature, message):
-    log_filename = f'{os.path.curdir}/logs/log.txt'
+    log_filename = '/opt/fancontrol/logs/log.txt'
 
     with open(log_filename, 'a') as f:
         logtext = '{} {} {}\n'.format(time.ctime(), temperature, message)
@@ -51,33 +54,40 @@ def cpu_temp():
         return float(f.read())/1000
 
 
+class FanOnOff:
+    def __init__(self):
+        self.is_off = True
+
+    def poweroff_fan(self):
+        self.is_off = True
+        fan.off()
+
+    def poweron_fan(self):
+        fan.on()
+        self.is_off = False
+
+    def get_state(self):
+        return 'fan off' if self.is_off else 'fan on'
+
+
 def main():
-    # close fan at begining
-    is_close = True
-    fan.off()
+    control = FanOnOff()
+    control.poweroff_fan()
+
     while True:
         rotate_logs()
 
         temperature = cpu_temp()
-        if is_close:
+        if control.is_off:
             if temperature >= FAN_ON_TEMP:
-                log_temperature(temperature, 'fan on')
-                fan.on()
-                is_close = False
-        else:
-            if temperature < FAN_OFF_TEMP:
-                log_temperature(temperature, 'fan off')
-                fan.off()
-                is_close = True
+                control.poweron_fan()
+        elif temperature < FAN_OFF_TEMP:
+            control.poweroff_fan()
 
-        time.sleep(2.0)
+        log_temperature(temperature, control.get_state)
 
-
-def handler(signal_received, frame):
-    print('SIGINT or CTRL-C')
-    exit(0)
+        time.sleep(10.0)
 
 
 if __name__ == '__main__':
-    signal(SIGINT, handler)
     main()

@@ -1,5 +1,11 @@
 #!/bin/bash
 
-sudo mkdir -p /opt/fancontrol
+sudo cp -r . /opt/fancontrol
 
-docker-compose up -d
+sudo cp fancontrol.service /usr/lib/systemd/system/
+
+sudo chmod u+x /usr/lib/systemd/scripts/fancontrol.sh
+
+sudo systemctl daemon-reload
+
+sudo systemctl enable --now fancontrol
