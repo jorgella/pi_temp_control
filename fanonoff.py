@@ -57,17 +57,17 @@ def main():
     is_close = True
     fan.off()
     while True:
-        logs.rotate_logs()
+        rotate_logs()
 
         temperature = cpu_temp()
         if is_close:
             if temperature >= FAN_ON_TEMP:
-                logs.log_temperature(temperature, 'fan on')
+                log_temperature(temperature, 'fan on')
                 fan.on()
                 is_close = False
         else:
             if temperature < FAN_OFF_TEMP:
-                logs.log_temperature(temperature, 'fan off')
+                log_temperature(temperature, 'fan off')
                 fan.off()
                 is_close = True
 
